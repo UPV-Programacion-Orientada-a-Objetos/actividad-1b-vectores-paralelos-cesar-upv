@@ -16,6 +16,7 @@ void buscar_producto_mas_caro(void);
 int index_por_codigo(int busqueda); // funciones auxiliares
 void cambiar_stock(int index, int stock_cambio, bool necesita_confirmacion);
 int preguntar_int(std::string pregunta);
+int obtener_index_producto(std::string mensaje);
 bool confirmar_accion(void);
 
 int main(int argc, char *argv[])
@@ -74,20 +75,16 @@ int main(int argc, char *argv[])
 void consultar_producto()
 {
     std::cout << "\n- - CONSULTAR PRODUCTO\n";
-    int busqueda = preguntar_int("Código del producto a consultar: ");
+    int index = obtener_index_producto("Código del producto a consultar: ");
 
-    int index = index_por_codigo(busqueda);
-    if (index == -1)
+    if (index != -1)
     {
-        std::cout << "\nError: código no encontrado. \n\n";
-        return;
+        std::cout << "\nInformación del Producto: \n";
+        std::cout << std::left << std::setw(20) << "Código: " << codigos[index] << std::endl;
+        std::cout << std::left << std::setw(19) << "Nombre: " << nombres[index] << std::endl;
+        std::cout << std::left << std::setw(19) << "Cantidad en stock: " << stocks[index] << std::endl;
+        std::cout << std::left << std::setw(19) << "Precio unitario: " << "$" << precios[index] << "\n\n";
     }
-
-    std::cout << "\nInformación del Producto: \n";
-    std::cout << std::left << std::setw(20) << "Código: " << codigos[index] << std::endl;
-    std::cout << std::left << std::setw(19) << "Nombre: " << nombres[index] << std::endl;
-    std::cout << std::left << std::setw(19) << "Cantidad en stock: " << stocks[index] << std::endl;
-    std::cout << std::left << std::setw(19) << "Precio unitario: " << "$" << precios[index] << "\n\n";
 }
 
 /**
@@ -97,20 +94,15 @@ void consultar_producto()
 void actualizar_inventario()
 {
     std::cout << "\n- - ACTUALIZAR INVENTARIO\n";
-    int busqueda = preguntar_int("Código del producto a actualizar: ");
+    int index = obtener_index_producto("Código del producto a actualizar: ");
 
-    int index = index_por_codigo(busqueda);
-    if (index == -1)
+    if (index != -1)
     {
-        std::cout << "\nError: código no encontrado. \n\n";
-        return;
+        std::string stock_cambio_string;
+        std::cout << "\nNombre: " << nombres[index] << " | Stock actual: " << stocks[index] << "\n";
+        int stock_cambio = preguntar_int("Ingresar nuevo stock, o stock a eliminar: ");
+        cambiar_stock(index, stock_cambio, true);
     }
-
-    std::string stock_cambio_string;
-    std::cout << "\n"
-              << nombres[index] << " | Stock actual: " << stocks[index] << "\n";
-    int stock_cambio = preguntar_int("Ingresar nuevo stock, o stock a eliminar: ");
-    cambiar_stock(index, stock_cambio, true);
 }
 
 /**
@@ -163,8 +155,8 @@ void buscar_producto_mas_caro()
 }
 
 /**
- * func. auxiliar que retorna el índice de un código de producto, de acuerdo a una búsqueda
- * @param busqueda código a buscar
+ * func. auxiliar que recorre el array de códigos de acuerdo a un término de búsqueda y retorna un índice válido o de error (-1).
+ * @param busqueda código a buscar.
  */
 int index_por_codigo(int busqueda)
 {
@@ -207,7 +199,7 @@ void cambiar_stock(int index, int stock_cambio, bool necesita_confirmacion)
 }
 
 /**
- * func. auxiliar que pregunta al usuario por un numero entero negativo o positivo y lo retorna.
+ * func. auxiliar que pregunta al usuario repetidamente por un número entero negativo o positivo hasta que ingrese uno válido y lo retorna.
  * @param pregunta cadena de texto de la pregunta hacia el usuario.
  */
 int preguntar_int(std::string pregunta)
@@ -235,6 +227,22 @@ int preguntar_int(std::string pregunta)
     } while (!es_valido);
 
     return 0;
+}
+
+/**
+ * func. auxiliar que le pide al usuario un código de producto y retorna el indice del producto, si es que lo encuentra.
+ * @param mensaje la pregunta con la que se pedirá el código.
+ */
+int obtener_index_producto(std::string mensaje) {
+    int busqueda = preguntar_int(mensaje);
+    int index = index_por_codigo(busqueda);
+
+    if (index == -1)
+    {
+        std::cout << "\nError: código no encontrado. \n\n";
+    }
+
+    return index;
 }
 
 /**
